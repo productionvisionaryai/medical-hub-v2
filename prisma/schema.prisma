@@ -1,0 +1,146 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- ENUMS ---
+
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING_PAYMENT
+  PAID
+  COMPLETED
+  CANCELED
+}
+
+// --- MODELS ---
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password_hash String?  // Nullable para usuarios de Google
+  role          Role     @default(PATIENT)
+  countryIso    String   // Ejemplo: "VE" o "MX" para RLS
+  
+  sessions      Session[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relaciones 1:1 para perfiles específicos
+  doctorProfile  Doctor?
+  patientProfile Patient?
+  
+  // Memoria del Agente (Grok xAI)
+  aiSessions     AISession[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+}
+
+model Doctor {
+  id              String   @id @map("user_id")
+  user            User     @relation(fields: [id], references: [id], onDelete: Cascade)
+  
+  specialty       String
+  licenseId       String   @unique
+  bio             String?  @db.Text
+  
+  // Integraciones Externas
+  dr7Id           String?  @unique // Sincronización con Dr7 AI
+  calLink         String?  // Username de Cal.com
+  blinkWalletId   String?  // Dirección para pagos Lightning
+  
+  // Relaciones
+  patients        Patient[] @relation("DoctorPatients")
+  appointments    Appointment[]
+}
+
+model Patient {
+  id              String   @id @map("user_id")
+  user            User     @relation(fields: [id], references: [id], onDelete: Cascade)
+  
+  phoneWhatsapp   String?  @unique
+  bloodType       String?
+  
+  // Relaciones
+  doctors         Doctor[] @relation("DoctorPatients")
+  biometrics      BiometricData[]
+  appointments    Appointment[]
+  payments        Payment[]
+}
+
+model BiometricData {
+  id          String   @id @default(uuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  
+  type        String   // "HR" (Pulso), "SPO2", "GLUCOSE", "BP_SYS", "BP_DIA"
+  value       Float
+  unit        String
+  timestamp   DateTime @default(now())
+
+  @@index([patientId, timestamp])
+}
+
+model Appointment {
+  id               String            @id @default(uuid())
+  doctorId         String
+  patientId        String
+  doctor           Doctor            @relation(fields: [doctorId], references: [id])
+  patient          Patient           @relation(fields: [patientId], references: [id])
+  
+  // Estado y Agenda
+  status           AppointmentStatus @default(PENDING_PAYMENT)
+  scheduledAt      DateTime
+  calEventId       String?           @unique // Referencia a Cal.com
+  
+  // Pagos Lightning (Blink)
+  lightningInvoice String?           @db.Text
+  paymentHash      String?           @unique
+  amountSats       Int?
+  
+  createdAt        DateTime          @default(now())
+
+  @@index([doctorId, status])
+}
+
+model AISession {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  threadId  String   @unique // ID del hilo en Grok (xAI)
+  summary   String?  @db.Text // Resumen de OpenClaw
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  hash      String   @unique // El hash de la transacción Lightning
+  amount    Int      // Monto en Satoshis
+  type      String   @default("LIGHTNING_TIP") // LIGHTNING_TIP o CONSULTATION
+  status    String   @default("SUCCESS")
+  createdAt DateTime @default(now())
+  
+  // Relación con el paciente
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id])
+
+  @@index([patientId])
+}
