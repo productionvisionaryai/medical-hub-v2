@@ -9,15 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/react": "^1.0.0",
+    "@ai-sdk/xai": "^1.0.0",
+    "ai": "^4.0.0",
+    "@calcom/embed-react": "^1.5.3",
     "@lucia-auth/adapter-prisma": "^4.0.1",
     "@prisma/client": "^5.22.0",
     "arctic": "^3.7.0",
+    "autoprefixer": "^10.4.20",
+    "framer-motion": "^11.0.0",
     "lucia": "^3.2.2",
+    "lucide-react": "^0.563.0",
     "next": "^15.1.11",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "zod": "^4.3.6"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",
