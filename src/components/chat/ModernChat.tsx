@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useChat } from '@ai-sdk/react';
-import type { UIMessage, UIMessageChunk } from 'ai';
+import type { UIMessage } from 'ai';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Send, Bot, User, Activity, Sparkles,
@@ -48,7 +48,7 @@ export default function ModernChat({ patientId, doctorCalLink = "visionary-ai/co
         if (consent === 'true') setHasConsent(true);
     }, []);
 
-    const { messages, sendMessage, regenerate, status, error } = useChat({
+    const { messages, append, status, error } = useChat({
         api: '/api/medical-chat',
         body: { patientId }, // Pasamos el contexto al backend
         onError: (err) => console.error("Nexus Audit - Chat Error:", err)
@@ -101,7 +101,7 @@ export default function ModernChat({ patientId, doctorCalLink = "visionary-ai/co
         return null;
     }, [doctorCalLink, doctorName]);
 
-    if (!hasConsent) return <ConsentForm onAccept={() => { localStorage.setItem('helena_medical_consent', 'true'); setHasConsent(true); }} />;
+    if (!hasConsent) return <ConsentForm onConsent={(granted) => { if (granted) localStorage.setItem('helena_medical_consent', 'true'); setHasConsent(granted); }} />;
 
     return (
         <div className="flex flex-col h-[90vh] w-full max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden">
@@ -141,7 +141,7 @@ export default function ModernChat({ patientId, doctorCalLink = "visionary-ai/co
 
             {/* Input y Footer Branding */}
             <div className="p-6 bg-white border-t">
-                <form onSubmit={(e) => { e.preventDefault(); sendMessage({ text: input }); setInput(''); }} className="relative">
+                <form onSubmit={(e) => { e.preventDefault(); append({ role: 'user', content: input } as any); setInput(''); }} className="relative">
                     <input
                         className="w-full pl-6 pr-14 py-4 bg-slate-50 border rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all text-sm"
                         value={input}

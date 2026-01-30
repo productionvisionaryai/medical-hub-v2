@@ -1,7 +1,10 @@
 // src/app/doctor/verify/page.tsx
 import { ShieldAlert, Clock, CheckCircle } from "lucide-react";
 
-export default function VerifyPage({ status = "PENDING" }: { status: 'PENDING' | 'REJECTED' }) {
+export default function VerifyPage() {
+    // Default status is PENDING, can be changed via URL search params if needed
+    const status = "PENDING";
+    
     return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
             <div className="bg-blue-50 p-6 rounded-full mb-6">

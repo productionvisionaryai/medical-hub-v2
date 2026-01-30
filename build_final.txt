@@ -1,0 +1,50 @@
+
+> medical-hub-v2@0.1.0 build
+> next build
+
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of c:\Users\PAV\Desktop\VisionaryAi\prodmedicalhub\package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * c:\Users\PAV\Desktop\VisionaryAi\prodmedicalhub\medical-hub-v2\package-lock.json
+
+   ▲ Next.js 15.5.11
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ⚠ Mismatching @next/swc version, detected: 15.5.7 while Next.js is on 15.5.11. Please ensure these match
+ ⚠ Mismatching @next/swc version, detected: 15.5.7 while Next.js is on 15.5.11. Please ensure these match
+ ⚠ Mismatching @next/swc version, detected: 15.5.7 while Next.js is on 15.5.11. Please ensure these match
+ ✓ Compiled successfully in 51s
+   Linting and checking validity of types ...
+   Collecting page data ...
+ ⚠ Mismatching @next/swc version, detected: 15.5.7 while Next.js is on 15.5.11. Please ensure these match
+   Generating static pages (0/12) ...
+   Generating static pages (3/12) 
+   Generating static pages (6/12) 
+   Generating static pages (9/12) 
+ ✓ Generating static pages (12/12)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    3.46 kB         106 kB
+├ ○ /_not-found                            995 B         103 kB
+├ ƒ /api/login/google                      140 B         102 kB
+├ ƒ /api/login/google/callback             140 B         102 kB
+├ ƒ /api/medical-chat                      140 B         102 kB
+├ ƒ /api/webhooks/blink                    140 B         102 kB
+├ ƒ /doctor                                140 B         102 kB
+├ ○ /doctor/settings                       786 B         103 kB
+├ ○ /doctor/verify                         140 B         102 kB
+└ ○ /patient                             68.6 kB         171 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/255-35bf8c00c5dde345.js         46 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)          1.96 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

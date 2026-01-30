@@ -6,9 +6,8 @@ import { cookies } from "next/headers";
 export async function GET() {
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
-    const url = await google.createAuthorizationURL(state, codeVerifier, {
-        scopes: ["profile", "email"]
-    });
+    const url = await google.createAuthorizationURL(state, codeVerifier, []);
+    url.searchParams.set("scope", "profile email");
 
     const cookieStore = await cookies();
     cookieStore.set("google_oauth_state", state, { path: "/", secure: true, httpOnly: true });

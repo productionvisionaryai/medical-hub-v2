@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export const getDoctorAvailability = async (doctorId: string) => {
     const doctor = await prisma.doctor.findUnique({
         where: { id: doctorId },
-        select: { calLink: true, countryIso: true }
+        select: { calLink: true }
     });
 
     if (!doctor?.calLink) return null;
