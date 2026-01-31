@@ -4,15 +4,27 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod'; // Para validación de esquemas
 
 export async function POST(req: Request) {
-    const { messages, patientId } = await req.json();
+    const { messages, patientId, systemInstructions, doctorName } = await req.json();
+
+    // Base system prompt para Helena
+    const baseSystemPrompt = `Eres Helena, el agente médico de OpenClaw para Visionary AI.
+    Tienes permiso para:
+    1. Consultar biométricos en tiempo real.
+    2. Generar alertas de urgencia.
+    3. Coordinar agendamientos vía Cal.com.`;
+
+    // Combinar el prompt base con las instrucciones específicas del doctor
+    // Si hay systemInstructions del doctor, las usamos; si no, usamos el base
+    const finalSystemPrompt = systemInstructions 
+        ? `${systemInstructions}
+
+---INSTRUCCIONES ADICIONALES DE HELENA---
+${baseSystemPrompt}`
+        : baseSystemPrompt;
 
     const result = await streamText({
         model: xai('grok-beta'),
-        system: `Eres Helena, el agente médico de OpenClaw para Visionary AI.
-        Tienes permiso para:
-        1. Consultar biométricos en tiempo real.
-        2. Generar alertas de urgencia.
-        3. Coordinar agendamientos vía Cal.com.`,
+        system: finalSystemPrompt,
         messages,
         tools: {
             // HERRAMIENTA 1: Consultar historial profundo

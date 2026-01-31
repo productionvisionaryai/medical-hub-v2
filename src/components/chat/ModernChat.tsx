@@ -20,13 +20,19 @@ interface ModernChatProps {
     patientId: string;
     doctorCalLink?: string; // Dinámico para cada doctor
     doctorName?: string;
+    systemInstructions?: string; // Prompt dinámico según el doctor
 }
 
 interface MessageWithContent extends UIMessage {
     content: string;
 }
 
-export default function ModernChat({ patientId, doctorCalLink = "visionary-ai/consulta", doctorName }: ModernChatProps) {
+export default function ModernChat({ 
+    patientId, 
+    doctorCalLink = "visionary-ai/consulta", 
+    doctorName,
+    systemInstructions 
+}: ModernChatProps) {
     const [hasConsent, setHasConsent] = useState<boolean>(false);
     const [input, setInput] = useState<string>('');
 
@@ -50,7 +56,11 @@ export default function ModernChat({ patientId, doctorCalLink = "visionary-ai/co
 
     const { messages, append, status, error } = useChat({
         api: '/api/medical-chat',
-        body: { patientId }, // Pasamos el contexto al backend
+        body: { 
+            patientId,
+            systemInstructions,
+            doctorName 
+        }, // Pasamos el contexto al backend
         onError: (err) => console.error("Nexus Audit - Chat Error:", err)
     });
 
